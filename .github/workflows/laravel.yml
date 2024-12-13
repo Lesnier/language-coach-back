@@ -21,9 +21,9 @@ jobs:
       env:
         SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       run: |
-        mkdir -p ~/.ssh
-        echo "$SSH_KEY" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
+        #mkdir -p ~/.ssh
+        #echo "$SSH_KEY" > ~/.ssh/id_rsa
+        #chmod 600 ~/.ssh/id_rsa
         #ssh-keyscan -H ${{ secrets.SERVER }} >> ~/.ssh/known_hosts
         
         ssh keywordcv@191.101.0.20  << 'EOF'
