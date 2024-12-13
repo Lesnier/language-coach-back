@@ -24,9 +24,9 @@ jobs:
         mkdir -p ~/.ssh
         echo "$SSH_KEY" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
-        ssh-keyscan -H ${{ secrets.SERVER }} >> ~/.ssh/known_hosts
+        #ssh-keyscan -H ${{ secrets.SERVER }} >> ~/.ssh/known_hosts
         
-        ssh ${{ secrets.SSH_USER_NAME }}@${{ secrets.SERVER }} << 'EOF'
+        ssh keywordcv@191.101.0.20  << 'EOF'
         cd /home/keywordcv/language-coach-back.lesinnovations.tech
         git pull origin main # Cambia "main" si usas otra rama principal
         composer install --no-dev --optimize-autoloader
