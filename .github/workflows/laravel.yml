@@ -21,12 +21,12 @@ jobs:
       env:
         SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       run: |
-        #mkdir -p ~/.ssh
-        #echo "$SSH_KEY" > ~/.ssh/id_rsa
-        #chmod 600 ~/.ssh/id_rsa
+        mkdir -p ~/.ssh
+        echo "$SSH_KEY" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
         #ssh-keyscan -H ${{ secrets.SERVER }} >> ~/.ssh/known_hosts
         
-        ssh keywordcv@191.101.0.20  << 'EOF'
+        ssh -o StrictHostKeyChecking=no -tt keywordcv@191.101.0.20  << 'EOF'
         cd /home/keywordcv/language-coach-back.lesinnovations.tech
         git pull origin main # Cambia "main" si usas otra rama principal
         composer install --no-dev --optimize-autoloader
