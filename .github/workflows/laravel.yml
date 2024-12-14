@@ -23,9 +23,10 @@ jobs:
       run: |
         mkdir -p ~/.ssh
         echo "$SSH_KEY" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
-        #ssh-keyscan -H ${{ secrets.SERVER }} >> ~/.ssh/known_hosts
-        echo "Private Key ${{ secrets.SSH_PRIVATE_KEY }}"  
+        chmod 600 ~/.ssh/id_rsa        
+        ssh-keyscan -H ${{ secrets.SERVER }} >> ~/.ssh/known_hosts
+        cat ~/.ssh/known_hosts
+        echo ~/.ssh/known_hosts  
         
         ssh -o StrictHostKeyChecking=no -tt keywordcv@191.101.0.20  << 'EOF'
         cd /home/keywordcv/language-coach-back.lesinnovations.tech
