@@ -19,7 +19,7 @@ jobs:
     # 2. Conectarse al servidor vía SSH y actualizar con git pull
     - name: Deploy via Git Pull
       env:
-        SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY 
+        SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         SSH_PASSPHRASE: ${{ secrets.SSH_PASSPHRASE }}
       run: |
         mkdir -p ~/.ssh
