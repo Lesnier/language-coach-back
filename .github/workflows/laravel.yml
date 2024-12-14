@@ -28,7 +28,7 @@ jobs:
         cat ~/.ssh/known_hosts
         echo ~/.ssh/known_hosts  
         
-        ssh -o StrictHostKeyChecking=no -tt keywordcv@191.101.0.20  << 'EOF'
+        ssh keywordcv@191.101.0.20  << 'EOF'
         cd /home/keywordcv/language-coach-back.lesinnovations.tech
         git pull origin main # Cambia "main" si usas otra rama principal
         composer install --no-dev --optimize-autoloader
