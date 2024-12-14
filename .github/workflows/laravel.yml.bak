@@ -27,5 +27,6 @@ jobs:
         chmod 600 ~/.ssh/id_rsa        
         ssh-keyscan -H 191.101.0.20 >> ~/.ssh/known_hosts
         eval "$(ssh-agent -s)"
-        echo "$SSH_PASSPHRASE" | ssh-add ~/.ssh/id_rsa        
+        echo "$SSH_PASSPHRASE" | ssh-add ~/.ssh/id_rsa
+        
         ssh -i ~/.ssh/id_rsa keywordcv@191.101.0.20  "cd /home/keywordcv/language-coach-back.lesinnovations.tech && sh.dev.sh"
