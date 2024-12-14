@@ -19,12 +19,14 @@ jobs:
     # 2. Conectarse al servidor vía SSH y actualizar con git pull
     - name: Deploy via Git Pull
       env:
-        SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY 
+        SSH_PASSPHRASE: ${{ secrets.SSH_PASSPHRASE }}
       run: |
         mkdir -p ~/.ssh
         echo "$SSH_KEY" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa        
         ssh-keyscan -H 191.101.0.20 >> ~/.ssh/known_hosts
-        cat ~/.ssh/known_hosts
+        eval "$(ssh-agent -s)"
+        echo "$SSH_PASSPHRASE" | ssh-add ~/.ssh/id_rsa
         
         ssh -i ~/.ssh/id_rsa keywordcv@191.101.0.20  "cd /home/keywordcv/language-coach-back.lesinnovations.tech && git pull origin main"
