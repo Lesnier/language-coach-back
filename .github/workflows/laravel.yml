@@ -26,6 +26,5 @@ jobs:
         chmod 600 ~/.ssh/id_rsa        
         ssh-keyscan -H 191.101.0.20 >> ~/.ssh/known_hosts
         cat ~/.ssh/known_hosts
-        echo ~/.ssh/known_hosts  
         
-        ssh keywordcv@191.101.0.20  "cd /home/keywordcv/language-coach-back.lesinnovations.tech && git pull origin main"
+        ssh -i ~/.ssh/id_rsa keywordcv@191.101.0.20  "cd /home/keywordcv/language-coach-back.lesinnovations.tech && git pull origin main"
