@@ -1,0 +1,31 @@
+name: Deploy Laravel to cPanel via Git Pull
+
+on:
+  push:
+    branches:
+      - main # Cambia "main" si usas otra rama principal
+
+jobs:
+  deploy:
+    name: Deploy Laravel with Git Pull
+    runs-on: ubuntu-latest
+    environment: dev
+
+    steps:
+    # 1. Checkout del repositorio
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # 2. Conectarse al servidor vía SSH y actualizar con git pull
+    - name: Deploy via Git Pull
+      env:
+        SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        SSH_PASSPHRASE: ${{ secrets.SSH_PASSPHRASE }}
+      run: |
+        mkdir -p ~/.ssh
+        echo "$SSH_KEY" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa        
+        ssh-keyscan -H 191.101.0.20 >> ~/.ssh/known_hosts
+        eval "$(ssh-agent -s)"
+        echo "$SSH_PASSPHRASE" | ssh-add ~/.ssh/id_rsa        
+        ssh -i ~/.ssh/id_rsa keywordcv@191.101.0.20  "cd /home/keywordcv/language-coach-back.lesinnovations.tech && sh.dev.sh"
