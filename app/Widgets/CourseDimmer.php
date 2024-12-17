@@ -3,6 +3,8 @@
 namespace App\Widgets;
 
 use App\Models\Course;
+use App\Models\Lesson;
+use App\Models\Module;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use TCG\Voyager\Facades\Voyager;
@@ -23,12 +25,14 @@ class CourseDimmer extends BaseDimmer
      */
     public function run()
     {
-        $count = Course::all()->count();
+        $count_courses = Course::all()->count();
+        $count_modules = Module::all()->count();
+        $count_lessons = Lesson::all()->count();
 
         return view('voyager::dimmer', array_merge($this->config, [
             'icon'   => 'voyager-study',
-            'title'  => "{$count} Courses",
-            'text'   => 'We have ' . $count . ' courses.',
+            'title'  => "{$count_courses} Courses, {$count_modules} Modules, {$count_lessons} Lessons",
+            'text'   => 'And excelent professors.',
             'button' => [
                 'text' => 'View Courses.',
                 'link' => route('voyager.courses.index'),
