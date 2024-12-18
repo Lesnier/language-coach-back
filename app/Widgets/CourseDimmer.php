@@ -34,7 +34,7 @@ class CourseDimmer extends BaseDimmer
             'title'  => "{$count_courses} Courses, {$count_modules} Modules, {$count_lessons} Lessons",
             'text'   => 'And excelent professors.',
             'button' => [
-                'text' => 'View Courses.',
+                'text' => 'View all courses.',
                 'link' => route('voyager.courses.index'),
             ],
             'image' => '/courses-dashboard.jpg',

@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -23,6 +25,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        Validator::extend('not_weekend', function($attribute, $value, $parameters, $validator) {
+            return $this->isWeekend($value) === false;
+        });
     }
+
+    function isWeekend($date) {
+        $weekday = date('N', strtotime($date));
+        return ($weekday >= 6); // 6 y 7 representan sábados y domingos
+    }
+
 }
