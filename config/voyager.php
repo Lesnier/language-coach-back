@@ -13,7 +13,7 @@ return [
     'user' => [
         'add_default_role_on_register' => true,
         'default_role'                 => 'user',
-        'default_avatar'               => '/user.png',
+        'default_avatar'               => 'app/public/users/user.png',
         'redirect'                     => '/admin',
     ],
 
@@ -147,6 +147,8 @@ return [
             'App\\Widgets\\UserDimmer',
             'App\\Widgets\\CourseDimmer',
             'App\\Widgets\\SubscriptionDimmer',
+            'App\\Widgets\\ForumDimmer',
+            'App\Widgets\FilesDimmer',
         ],
 
     ],

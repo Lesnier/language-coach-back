@@ -32,7 +32,7 @@ class CourseDimmer extends BaseDimmer
         return view('voyager::dimmer', array_merge($this->config, [
             'icon'   => 'voyager-study',
             'title'  => "{$count_courses} Courses, {$count_modules} Modules, {$count_lessons} Lessons",
-            'text'   => 'And excelent professors.',
+            'text'   => 'And excellent professors.',
             'button' => [
                 'text' => 'View all courses.',
                 'link' => route('voyager.courses.index'),
