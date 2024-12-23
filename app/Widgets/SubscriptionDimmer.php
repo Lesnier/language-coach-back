@@ -36,4 +36,8 @@ class SubscriptionDimmer extends BaseDimmer
             'image' => '/subscription-dashboard.jpg',
         ]));
     }
+    public function shouldBeDisplayed()
+    {
+        return Auth::user()->can('browse', Voyager::model('User'));
+    }
 }

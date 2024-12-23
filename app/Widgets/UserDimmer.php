@@ -36,4 +36,9 @@ class UserDimmer extends BaseDimmer
             'image' => 'users-dashboard.jpg',
         ]));
     }
+
+    public function shouldBeDisplayed()
+    {
+        return Auth::user()->can('browse', Voyager::model('User'));
+    }
 }
