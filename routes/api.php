@@ -24,7 +24,8 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function ()
 {
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::post('/agenda', [AgendaController::class, 'store']);
+    Route::get('/agendas', [AgendaController::class, 'index']);
+    Route::post('/agendas', [AgendaController::class, 'store']);
     Route::get('/courses', [CourseController::class, 'index']);
     Route::get('/courses/{id}', [CourseController::class, 'show']);
 });
