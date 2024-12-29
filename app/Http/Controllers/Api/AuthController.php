@@ -18,8 +18,15 @@ class AuthController extends Controller
 
         $user = User::where('email', $validatedData['email'])->first();
 
-        if (!$user || !Hash::check($validatedData['password'], $user->password)) {
+
+        if (!$user || !Hash::check($validatedData['password'], $user->password))
+        {
             return response()->json(['message' => 'Invalid credentials'], 401);
+        }
+
+        if(!in_array($user->role_id,[2,4]))
+        {
+            return response()->json(['message' => 'Invalid role'], 401);
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
