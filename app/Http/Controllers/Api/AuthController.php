@@ -11,27 +11,25 @@ class AuthController extends Controller
 {
     public function login(Request $request)
     {
-        $validatedData = $request->validate([
+        $validatedData = $request->validate
+        ([
             'email' => 'required|string|email',
             'password' => 'required|string|min:8',
         ]);
 
         $user = User::where('email', $validatedData['email'])->first();
-
-
         if (!$user || !Hash::check($validatedData['password'], $user->password))
         {
             return response()->json(['message' => 'Invalid credentials'], 401);
         }
-
         if(!in_array($user->role_id,[2,4]))
         {
             return response()->json(['message' => 'Invalid role'], 401);
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
-
-        return response()->json([
+        return response()->json
+        ([
             'access_token' => $token,
             'token_type' => 'Bearer',
         ]);

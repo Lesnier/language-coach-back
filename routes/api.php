@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AgendaController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CourseController;
+use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -23,9 +24,13 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function ()
 {
+    Route::get('/user-info', [UserController::class, 'showInfo']);
+    Route::post('/change-password', [UserController::class, 'changePass']);
     Route::post('/logout', [AuthController::class, 'logout']);
+
     Route::get('/agendas', [AgendaController::class, 'index']);
     Route::post('/agendas', [AgendaController::class, 'store']);
+
     Route::get('/courses', [CourseController::class, 'index']);
     Route::get('/courses/{id}', [CourseController::class, 'show']);
 });
