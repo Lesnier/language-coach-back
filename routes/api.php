@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AgendaController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CourseController;
+use App\Http\Controllers\Api\ForumController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -33,4 +34,8 @@ Route::middleware('auth:sanctum')->group(function ()
 
     Route::get('/courses', [CourseController::class, 'index']);
     Route::get('/courses/{id}', [CourseController::class, 'show']);
+
+    Route::get('/forums', [ForumController::class,'forums']);
+    Route::get('/threads', [ForumController::class,'threads']);
+    Route::post('/threadreply/{thread_id}', [ForumController::class,'threadreply']);
 });
