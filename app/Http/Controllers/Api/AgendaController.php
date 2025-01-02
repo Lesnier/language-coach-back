@@ -31,6 +31,20 @@ class AgendaController extends Controller
             'time' => 'required|date_format:H:i',
         ]);
 
+        if($this->isWeekend($validatedData['date']))
+        {
+            return response()->json([
+                'error'=>'The selected is a weekend.'
+            ]);
+        }
+
+        if($this->haveAgenda($validatedData['date'], auth()->user()->id))
+        {
+            return response()->json([
+                'error'=>'The user have an agenda in the selected date'
+            ]);
+        }
+
         $user = auth()->user();
 
         $agenda = Agenda::create([
@@ -43,5 +57,19 @@ class AgendaController extends Controller
             'message' => 'Agenda make success',
             'agenda' => $agenda,
         ], 201);
+    }
+
+    function isWeekend($date): bool
+    {
+        $weekday = date('N', strtotime($date));
+        return ($weekday >= 6); // 6 y 7 representan sábados y domingos
+    }
+
+    public function haveAgenda($date,$user_id):bool
+    {
+        return Agenda::where('user_id', $user_id)
+            ->whereDate('date', $date)
+            ->exists();
+
     }
 }
