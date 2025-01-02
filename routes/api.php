@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AgendaController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CourseController;
+use App\Http\Controllers\Api\FileController;
 use App\Http\Controllers\Api\ForumController;
 use App\Http\Controllers\Api\TaskController;
 use App\Http\Controllers\Api\UserController;
@@ -44,4 +45,9 @@ Route::middleware('auth:sanctum')->group(function ()
     Route::post('/tasks',[TaskController::class,'store']);
     Route::post('/tasks/{id}',[TaskController::class,'update']);
     Route::delete('/tasks/{id}',[TaskController::class,'delete']);
+
+    Route::get('/files',[FileController::class,'index']);
+    Route::post('/files',[FileController::class,'store']);
+    Route::post('/files/{id}',[FileController::class,'update']);
+    Route::delete('/files/{id}',[FileController::class,'delete']);
 });
