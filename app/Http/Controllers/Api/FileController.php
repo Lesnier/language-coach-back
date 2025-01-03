@@ -75,11 +75,11 @@ class FileController extends Controller
 
         if ($request->hasFile('file'))
         {
-            $originalFilePath = $request->file('file')->getPathName();
-            $newFilePath = $this->storeFile($originalFilePath);
-            //Storage::delete($file->file);
+            //$originalFilePath = $request->file('file')->getPathname();
+            $fileAdd = $request->file('file');
+            $newFile = $this->storeFile($fileAdd);
             unlink($file->file);
-            $file->file = $newFilePath;
+            $file->file = $newFile;
         }
         $file->save();
 
