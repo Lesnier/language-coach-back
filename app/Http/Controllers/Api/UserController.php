@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -21,6 +22,7 @@ class UserController extends Controller
         return response()->json($user);
 
     }
+
     public function changePass(Request $request)
     {
         $credentials = $request->only('current_password', 'new_password', 'confirm_password');
@@ -43,5 +45,15 @@ class UserController extends Controller
         $user->save();
 
         return response()->json(['message' => 'Password changed successfully'], 200);
+    }
+
+    public function getStudents()
+    {
+        $studendts = User::where('role_id','=',2)->get();
+
+        return response()->json([
+            'message' => 'List of students',
+            'Students' => $studendts
+        ]);
     }
 }

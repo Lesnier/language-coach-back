@@ -20,7 +20,7 @@ class FileController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'name' => 'required',
+            'name' => 'required|unique:files',
             'type' => 'required',
             'file' => 'required'
         ]);
@@ -31,9 +31,10 @@ class FileController extends Controller
 
         if ($request->hasFile('file'))
         {
-            $originalFilePath = $request->file('file')->getPathname();
-            $newFilePath = $this->storeFile($originalFilePath);
-            $file->file = $newFilePath;
+            //$originalFilePath = $request->file('file')->getPathname();
+            $fileAdd = $request->file('file');
+            $newFile = $this->storeFile($fileAdd);
+            $file->file = $newFile;
         }
 
         $file->save();
@@ -46,34 +47,15 @@ class FileController extends Controller
 
     private function storeFile($file)
     {
-         //Extraer el nombre del archivo y la extensión
-        $fileName = pathinfo($file, PATHINFO_FILENAME);
-        $extension = pathinfo($file, PATHINFO_EXTENSION);
+        $filename = $file->getClientOriginalName();
+        $filename = pathinfo($filename,PATHINFO_FILENAME);
+        $name_file = str_replace(" ","_",$filename);
+        $extension = $file->getClientOriginalExtension();
+        $final_name = date("His") . "_" . $name_file . "." . $extension;
+        $file->move(public_path('/storage/files'),$final_name);
 
-        // Generar un nombre único para la imagen
-        $uniqueFileName =  $fileName . '.' . $extension;
-
-       // Determinar el directorio donde se guardará la imagen
-        $directory = 'storage/app/public/files/';
-
-        // Crear el directorio si no existe
-        if (!File::isDirectory($directory)) {
-            File::makeDirectory($directory, 0755, true);
-        }
-
-        // Construir la ruta completa del archivo
-        $filePath = $directory . '/' . $uniqueFileName;
-
-        // Copiar la imagen al directorio de almacenamiento
-        copy($file, $filePath);
-
-        // Obtenir la ruta relativa de la imagen
-
-        return $filePath;
-
-
+        return public_path('/storage/files') . "/". $final_name;
     }
-
     public function update(Request $request, $id)
     {
         $file = ModelFile::find($id);
