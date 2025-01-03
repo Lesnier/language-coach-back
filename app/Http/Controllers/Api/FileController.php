@@ -56,6 +56,7 @@ class FileController extends Controller
 
         return public_path('/storage/files') . "/". $final_name;
     }
+
     public function update(Request $request, $id)
     {
         $file = ModelFile::find($id);
@@ -76,6 +77,8 @@ class FileController extends Controller
         {
             $originalFilePath = $request->file('file')->getPathName();
             $newFilePath = $this->storeFile($originalFilePath);
+            //Storage::delete($file->file);
+            unlink($file->file);
             $file->file = $newFilePath;
         }
         $file->save();
@@ -93,7 +96,8 @@ class FileController extends Controller
             return response()->json(['error' => 'File not found'], 404);
         }
 
-        Storage::delete($file->file);
+        //Storage::delete($file->file);
+        unlink($file->file);
         $file->delete();
 
         return response()->json(['message' => 'File deleted']);

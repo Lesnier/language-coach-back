@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CourseController;
 use App\Http\Controllers\Api\FileController;
 use App\Http\Controllers\Api\ForumController;
+use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\TaskController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
@@ -51,4 +52,9 @@ Route::middleware('auth:sanctum')->group(function ()
     Route::post('/files',[FileController::class,'store']);
     Route::post('/files/{id}',[FileController::class,'update']);
     Route::delete('/files/{id}',[FileController::class,'delete']);
+
+    Route::get('/payments',[PaymentController::class,'index']);
+    Route::post('/payments',[PaymentController::class,'store']);
+    Route::post('/payments/{id}',[PaymentController::class,'update']);
+    Route::delete('/payments/{id}',[PaymentController::class,'delete']);
 });

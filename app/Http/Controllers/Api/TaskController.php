@@ -31,13 +31,12 @@ class TaskController extends Controller
         $task->course_id = $validatedData['course_id'];
         $task->teacher_note = $validatedData['teacher_note'];
 
-        if ($request->hasFile('image')) {
-            $originalImagePath = $request->file('image')->getPathName();
-            $newImagePath = $this->storeImage($originalImagePath);
-
-            // Actualiza la tarea con la nueva ruta de la imagen
-            $task->image = $newImagePath;
-            $task->save();
+        if ($request->hasFile('image'))
+        {
+            //$originalFilePath = $request->file('file')->getPathname();
+            $fileAdd = $request->file('image');
+            $newFile = $this->storeFile($fileAdd);
+            $task->image = $newFile;
         }
 
         $task->save();
@@ -48,33 +47,16 @@ class TaskController extends Controller
         ], 201);
     }
 
-    private function storeImage($imagePath)
+    private function storeFile($file)
     {
-        // Extraer el nombre del archivo y la extensión
-        $fileName = pathinfo($imagePath, PATHINFO_FILENAME);
-        $extension = pathinfo($imagePath, PATHINFO_EXTENSION);
+        $filename = $file->getClientOriginalName();
+        $filename = pathinfo($filename,PATHINFO_FILENAME);
+        $name_file = str_replace(" ","_",$filename);
+        $extension = $file->getClientOriginalExtension();
+        $final_name = date("His") . "_" . $name_file . "." . $extension;
+        $file->move(public_path('/storage/tasks'),$final_name);
 
-        // Generar un nombre único para la imagen
-        $uniqueFileName = md5(time() . $fileName) . '.' . $extension;
-
-        // Determinar el directorio donde se guardará la imagen
-        $directory = 'storage/app/public/tasks';
-
-        // Crear el directorio si no existe
-        if (!File::isDirectory(public_path($directory))) {
-            File::makeDirectory(public_path($directory), 0755, true);
-        }
-
-        // Construir la ruta completa del archivo
-        $filePath = public_path($directory) . '/' . $uniqueFileName;
-
-        // Copiar la imagen al directorio de almacenamiento
-        copy($imagePath, $filePath);
-
-        // Obtenir la ruta relativa de la imagen
-        $relativePath = str_replace(public_path(), '', $filePath);
-
-        return $relativePath;
+        return public_path('/storage/tasks') . "/". $final_name;
     }
 
     public function update(Request $request, $id)
@@ -91,13 +73,13 @@ class TaskController extends Controller
         $task->course_id = $validatedData['course_id'];
         $task->teacher_note = $validatedData['teacher_note'];
 
-        if ($request->hasFile('image')) {
-            $originalImagePath = $request->file('image')->getPathName();
-            $newImagePath = $this->storeImage($originalImagePath);
-
-            // Actualiza la tarea con la nueva ruta de la imagen
-            $task->image = $newImagePath;
-            $task->save();
+        if ($request->hasFile('image'))
+        {
+            //$originalFilePath = $request->file('file')->getPathname();
+            $fileAdd = $request->file('image');
+            $newFile = $this->storeFile($fileAdd);
+            unlink($task->image);
+            $task->image = $newFile;
         }
 
         $task->save();
@@ -115,7 +97,8 @@ class TaskController extends Controller
             return response()->json(['error' => 'Task not found'], 404);
         }
 
-        Storage::delete($task->image);
+        //Storage::delete($task->image);
+        unlink($task->image);
         $task->delete();
 
         return response()->json(['message' => 'Task deleted']);
