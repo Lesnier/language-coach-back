@@ -56,7 +56,7 @@ class TaskController extends Controller
         $final_name = date("His") . "_" . $name_file . "." . $extension;
         $file->move(public_path('/storage/tasks'),$final_name);
 
-        return public_path('/storage/tasks') . "/". $final_name;
+        return '/tasks' . "/". $final_name;
     }
 
     public function update(Request $request, $id)
@@ -75,10 +75,9 @@ class TaskController extends Controller
 
         if ($request->hasFile('image'))
         {
-            //$originalFilePath = $request->file('file')->getPathname();
             $fileAdd = $request->file('image');
+            unlink(public_path('storage/' . $task->image));
             $newFile = $this->storeFile($fileAdd);
-            unlink($task->image);
             $task->image = $newFile;
         }
 
@@ -97,8 +96,7 @@ class TaskController extends Controller
             return response()->json(['error' => 'Task not found'], 404);
         }
 
-        //Storage::delete($task->image);
-        unlink($task->image);
+        unlink(public_path('storage/' .$task->image));
         $task->delete();
 
         return response()->json(['message' => 'Task deleted']);
