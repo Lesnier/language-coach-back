@@ -54,7 +54,7 @@ class FileController extends Controller
         $final_name = date("His") . "_" . $name_file . "." . $extension;
         $file->move(public_path('/storage/files'),$final_name);
 
-        return public_path('/storage/files') . "/". $final_name;
+        return 'files' . "/". $final_name;
     }
 
     public function update(Request $request, $id)
