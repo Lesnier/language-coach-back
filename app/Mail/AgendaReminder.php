@@ -9,15 +9,15 @@ use Illuminate\Queue\SerializesModels;
 
 class AgendaReminder extends Mailable
 {
-    public $agenda;
+    public $emailBody;
     use Queueable, SerializesModels;
-    public function __construct($agenda)
+    public function __construct($emailBody)
     {
-        $this->agenda = $agenda;
+        $this->emailBody = $emailBody;
     }
 
     public function build()
     {
-        return $this->view('mail.agenda_reminder');
+        return $this->view('mail.agenda_confirmation');
     }
 }

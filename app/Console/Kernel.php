@@ -16,7 +16,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->job(SendAgendaReminder::class)->everyMinute();
+//        $schedule->job(SendAgendaReminder::class)->everyMinute();
     }
 
     /**

@@ -3,8 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Mail\AgendaReminder;
 use App\Models\Agenda;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class AgendaController extends Controller
 {
@@ -71,5 +75,33 @@ class AgendaController extends Controller
             ->whereDate('date', $date)
             ->exists();
 
+    }
+
+    public function agendaConfirmationEmail(Request $request)
+    {
+        $validatedData = $request->validate([
+            'email' => 'required|email',
+            'emailBody' => 'required',
+        ]);
+
+        $email = $validatedData['email'];
+        $emailBody = $validatedData['emailBody'];
+
+        $existEmail = User::where('email','=',$email)->first();
+        if($existEmail)
+        {
+            Mail::to($email)->send(new AgendaReminder($emailBody));
+            return response()->json(['message' => 'Email sent to ' . $email]);
+        }
+        else
+        {
+            return response()->json(['error' => $email . ' email not found. ']);
+        }
+//        $agendasHoy = Agenda::whereDate('date', Carbon::now()->toDateString())->get();
+//        foreach ($agendasHoy as $agenda)
+//        {
+//        }
+        //return response()->json('correo enviado');
+//        return response()->json(Carbon::now()->toTimeString());
     }
 }

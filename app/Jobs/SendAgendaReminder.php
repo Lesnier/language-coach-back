@@ -25,14 +25,14 @@ class SendAgendaReminder implements ShouldQueue
 
     public function handle()
     {
-        $user = $this->agenda->user;
-
-        $reminderTime = $this->agenda->time->setTime($this->agenda->time->format('H'),0,0)->subHour();
-        $cubaNow = Carbon::now()->setTimezone('America/Havana');
-
-        if ($reminderTime <= $cubaNow)
-        {
-            Mail::to($user->email)->send(new AgendaReminder($this->agenda));
-        }
+//        $user = $this->agenda->user;
+//
+//        $reminderTime = $this->agenda->time->setTime($this->agenda->time->format('H'),0,0)->subHour();
+//        $cubaNow = Carbon::now()->setTimezone('America/Havana');
+//
+//        if ($reminderTime <= $cubaNow)
+//        {
+//            Mail::to($user->email)->send(new AgendaReminder($this->agenda));
+//        }
     }
 }
