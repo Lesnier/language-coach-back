@@ -55,9 +55,8 @@ class TaskController extends Controller
         $name_file = str_replace(" ","_",$filename);
         $extension = $file->getClientOriginalExtension();
         $final_name = date("His") . "_" . $name_file . "." . $extension;
-        //$file->move(public_path('/storage/tasks'),$final_name);
-         dd(response()->json(public_path('/storage/tasks'),$final_name));
-        //return '/tasks' . "/". $final_name;
+        $file->move(public_path('/storage/tasks'),$final_name);
+        return '/tasks' . "/". $final_name;
     }
 
     public function update(Request $request, $id)
