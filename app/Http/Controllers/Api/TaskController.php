@@ -33,10 +33,8 @@ class TaskController extends Controller
 
         if ($request->hasFile('image'))
         {
-            //$originalFilePath = $request->file('file')->getPathname();
             $fileAdd = $request->file('image');
             $newFile = $this->storeFile($fileAdd);
-            dd(response()->json($newFile));
             $task->image = $newFile;
         }
 
@@ -95,8 +93,10 @@ class TaskController extends Controller
         if (!$task) {
             return response()->json(['error' => 'Task not found'], 404);
         }
-
-        unlink(public_path('storage/' .$task->image));
+        if($task->image)
+        {
+            unlink(public_path('storage/' .$task->image));
+        }
         $task->delete();
 
         return response()->json(['message' => 'Task deleted']);
