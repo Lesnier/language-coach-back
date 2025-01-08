@@ -27,7 +27,7 @@ class TaskController extends Controller
         ]);
 
         $task = new Task();
-        $task->user_id = auth()->id(); // Asumiendo que estás usando autenticación
+        $task->user_id = auth()->id();
         $task->course_id = $validatedData['course_id'];
         $task->teacher_note = $validatedData['teacher_note'];
 
@@ -53,8 +53,9 @@ class TaskController extends Controller
         $name_file = str_replace(" ","_",$filename);
         $extension = $file->getClientOriginalExtension();
         $final_name = date("His") . "_" . $name_file . "." . $extension;
-        $file->move(public_path('/storage/tasks'),$final_name);
-        return '/tasks' . "/". $final_name;
+        $file->move(storage_path('app/public/tasks'),$final_name);
+
+        return 'tasks/' . $final_name;
     }
 
     public function update(Request $request, $id)
@@ -74,7 +75,10 @@ class TaskController extends Controller
         if ($request->hasFile('image'))
         {
             $fileAdd = $request->file('image');
-            unlink(public_path('storage/' . $task->image));
+            if($task->image)
+            {
+                unlink(storage_path('app/public/' . $task->image));
+            }
             $newFile = $this->storeFile($fileAdd);
             $task->image = $newFile;
         }
@@ -95,10 +99,9 @@ class TaskController extends Controller
         }
         if($task->image)
         {
-            unlink(public_path('storage/' .$task->image));
+            unlink(storage_path('app/public/' .$task->image));
         }
         $task->delete();
-
         return response()->json(['message' => 'Task deleted']);
     }
 }

@@ -29,7 +29,6 @@ class PaymentController extends Controller
 
         if ($request->hasFile('image'))
         {
-            //$originalFilePath = $request->file('file')->getPathname();
             $fileAdd = $request->file('image');
             $newFile = $this->storeFile($fileAdd);
             $payment->image = $newFile;
@@ -43,35 +42,17 @@ class PaymentController extends Controller
         ], 201);
     }
 
-//    private function storeFile($file)
-//    {
-//        $filename = $file->getClientOriginalName();
-//        $filename = pathinfo($filename,PATHINFO_FILENAME);
-//        $name_file = str_replace(" ","_",$filename);
-//        $extension = $file->getClientOriginalExtension();
-//        $final_name = date("His") . "_" . $name_file . "." . $extension;
-//        $file->move(public_path('/storage/payments'),$final_name);
-//
-//        return public_path('/storage/payments') . "/". $final_name;
-//    }
-
     private function storeFile($file)
     {
-        $storageRoot = storage_path();
-
         $filename = $file->getClientOriginalName();
-        $filename = pathinfo($filename, PATHINFO_FILENAME);
-        $name_file = str_replace(" ", "_", $filename);
+        $filename = pathinfo($filename,PATHINFO_FILENAME);
+        $name_file = str_replace(" ","_",$filename);
         $extension = $file->getClientOriginalExtension();
         $final_name = date("His") . "_" . $name_file . "." . $extension;
+        $file->move(storage_path('app/public/payments'),$final_name);
 
-        $relativePath = substr(realpath($storageRoot), strlen(storage_path()), -strlen($file->getClientOriginalName()));
-
-        $file->move(public_path('/storage/payments'), $final_name);
-
-        return 'payments'. "/" . $final_name;
+        return 'payments/'. $final_name;
     }
-
 
     public function update(Request $request, $id)
     {
@@ -91,10 +72,11 @@ class PaymentController extends Controller
 
         if ($request->hasFile('image'))
         {
-            //$originalFilePath = $request->file('file')->getPathname();
             $fileAdd = $request->file('image');
-            //Storage::delete($payment->image);
-            unlink(public_path('storage/' . $payment->image));
+            if($payment->image)
+            {
+                unlink(storage_path('app/public/' . $payment->image));
+            }
             $newFile = $this->storeFile($fileAdd);
             $payment->image = $newFile;
         }
@@ -112,9 +94,10 @@ class PaymentController extends Controller
         if (!$payment) {
             return response()->json(['error' => 'Payment not found'], 404);
         }
-
-        //Storage::delete($payment->image);
-        unlink(public_path('storage/' . $payment->image));
+        if($payment->image)
+        {
+            unlink(storage_path('app/public/' . $payment->image));
+        }
         $payment->delete();
 
         return response()->json(['message' => 'Payment deleted']);

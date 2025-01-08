@@ -31,7 +31,6 @@ class FileController extends Controller
 
         if ($request->hasFile('file'))
         {
-            //$originalFilePath = $request->file('file')->getPathname();
             $fileAdd = $request->file('file');
             $newFile = $this->storeFile($fileAdd);
             $file->file = $newFile;
@@ -52,9 +51,9 @@ class FileController extends Controller
         $name_file = str_replace(" ","_",$filename);
         $extension = $file->getClientOriginalExtension();
         $final_name = date("His") . "_" . $name_file . "." . $extension;
-        $file->move(public_path('/storage/files'),$final_name);
+        $file->move(storage_path('app/public/files'),$final_name);
 
-        return 'files' . "/". $final_name;
+        return 'files/'. $final_name;
     }
 
     public function update(Request $request, $id)
@@ -75,9 +74,11 @@ class FileController extends Controller
 
         if ($request->hasFile('file'))
         {
-            //$originalFilePath = $request->file('file')->getPathname();
             $fileAdd = $request->file('file');
-            unlink(public_path('storage/' . $file->file));
+            if($file->file)
+            {
+                unlink(storage_path('app/public/' . $file->file));
+            }
             $newFile = $this->storeFile($fileAdd);
             $file->file = $newFile;
         }
@@ -95,10 +96,11 @@ class FileController extends Controller
         if (!$file) {
             return response()->json(['error' => 'File not found'], 404);
         }
-
-        unlink(public_path('storage/' . $file->file));
+        if($file->file)
+        {
+            unlink(storage_path('app/public/' . $file->file));
+        }
         $file->delete();
-
         return response()->json(['message' => 'File deleted']);
     }
 }
