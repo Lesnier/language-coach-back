@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Payment;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -48,10 +49,11 @@ class PaymentController extends Controller
         $filename = pathinfo($filename,PATHINFO_FILENAME);
         $name_file = str_replace(" ","_",$filename);
         $extension = $file->getClientOriginalExtension();
+        $month_year = Carbon::now()->monthName . Carbon::now()->year;
         $final_name = date("His") . "_" . $name_file . "." . $extension;
-        $file->move(storage_path('app/public/payments'),$final_name);
+        $file->move(storage_path('app/public/payments/' . $month_year),$final_name);
 
-        return 'payments/'. $final_name;
+        return 'payments/'. $month_year . '/' . $final_name;
     }
 
     public function update(Request $request, $id)
