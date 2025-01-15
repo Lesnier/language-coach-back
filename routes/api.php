@@ -36,6 +36,7 @@ Route::middleware('auth:sanctum')->group(function ()
     Route::get('/agendas', [AgendaController::class, 'index']);
     Route::post('/agendas', [AgendaController::class, 'store']);
     Route::post('/agendas-confirmation', [AgendaController::class, 'agendaConfirmationEmail']);
+    Route::post('/agendas-cancel/{agenda_id}', [AgendaController::class, 'cancelAgenda']);
 
     Route::get('/courses', [CourseController::class, 'index']);
     Route::get('/courses/{id}', [CourseController::class, 'show']);

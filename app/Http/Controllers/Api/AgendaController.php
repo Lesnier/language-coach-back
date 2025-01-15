@@ -50,7 +50,6 @@ class AgendaController extends Controller
         }
 
         $user = auth()->user();
-
         $agenda = Agenda::create([
             'date' => $validatedData['date'],
             'time' => $validatedData['time'],
@@ -62,13 +61,17 @@ class AgendaController extends Controller
             'agenda' => $agenda,
         ], 201);
     }
-
     function isWeekend($date): bool
     {
         $weekday = date('N', strtotime($date));
         return ($weekday >= 6); // 6 y 7 representan sábados y domingos
     }
-
+    function isProfessor($user_id):bool
+    {
+        $user = User::find($user_id);
+        $rol = $user->role->id;
+        return $rol == 3;
+    }
     public function haveAgenda($date,$user_id):bool
     {
         return Agenda::where('user_id', $user_id)
@@ -76,7 +79,25 @@ class AgendaController extends Controller
             ->exists();
 
     }
-
+    public function cancelAgenda($agenda_id)
+    {
+        $agenda = Agenda::find($agenda_id);
+        if (!$agenda)
+        {
+            return response()->json([
+                'message' => 'Agenda not found',
+            ],404);
+        }
+        else
+        {
+            $agenda->state = "Cancelled";
+            $agenda->save();
+            return response()->json([
+                'message' => 'Agenda cancelled',
+                'agenda' => $agenda
+            ],201);
+        }
+    }
     public function agendaConfirmationEmail(Request $request)
     {
         $validatedData = $request->validate([
