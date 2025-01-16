@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Mail\AgendaReminder;
 use App\Models\Agenda;
+use App\Models\Availability;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -50,10 +51,25 @@ class AgendaController extends Controller
         }
 
         $user = auth()->user();
+
+        $availability = Availability::where('day_of_week', $validatedData['date'])
+            ->where(function($query) use ($validatedData)
+            {
+                $query->where('start_time', '<=', Carbon::parse($validatedData['time'])->toTimeString())
+                        ->where('end_time', '>', Carbon::parse($validatedData['time'])->toTimeString());
+            })
+            ->where('is_available','=',1)
+            ->with('user')
+            ->get();
+
+        $professor_id = $availability->first()->user_id;
+
         $agenda = Agenda::create([
             'date' => $validatedData['date'],
             'time' => $validatedData['time'],
             'user_id' => $user->id,
+            'professor_id' => $professor_id,
+            'state' => 'Active'
         ]);
 
         return response()->json([
@@ -61,6 +77,38 @@ class AgendaController extends Controller
             'agenda' => $agenda,
         ], 201);
     }
+
+    public function update(Request $request, $agenda_id)
+    {
+        $validatedData = $request->validate([
+            'date' => 'required|date',
+            'time' => 'required|date_format:H:i',
+            'professor_id' => 'required|exists:users,id',
+        ]);
+
+        $agenda = Agenda::find($agenda_id);
+
+        $agenda->date = $validatedData['date'];
+        $agenda->time = $validatedData['time'];
+        $agenda->professor_id = $validatedData['professor_id'];
+
+    if($this->isWeekend($validatedData['date']))
+    {
+        return response()->json([
+            'error'=>'The selected date is a weekend.'
+        ]);
+    }else
+    {
+        $agenda->save();
+
+        return response()->json([
+            'message' => 'Agenda updated success',
+            'agenda' => $agenda,
+        ], 201);
+    }
+    }
+
+
     function isWeekend($date): bool
     {
         $weekday = date('N', strtotime($date));

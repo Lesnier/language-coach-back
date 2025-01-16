@@ -30,11 +30,13 @@ Route::middleware('auth:sanctum')->group(function ()
 {
     Route::get('/user-info', [UserController::class, 'showInfo']);
     Route::get('/students', [UserController::class, 'getStudents']);
+    Route::get('/professors', [UserController::class, 'getProfessors']);
     Route::post('/change-password', [UserController::class, 'changePass']);
     Route::post('/logout', [AuthController::class, 'logout']);
 
     Route::get('/agendas', [AgendaController::class, 'index']);
     Route::post('/agendas', [AgendaController::class, 'store']);
+    Route::post('/agendas/{agenda_id}', [AgendaController::class, 'update']);
     Route::post('/agendas-confirmation', [AgendaController::class, 'agendaConfirmationEmail']);
     Route::post('/agendas-cancel/{agenda_id}', [AgendaController::class, 'cancelAgenda']);
 

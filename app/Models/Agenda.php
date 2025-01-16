@@ -13,7 +13,9 @@ class Agenda extends Model
     protected $fillable = [
         'date',
         'time',
-        'user_id'
+        'user_id',
+        'professor_id',
+        'state'
     ];
 
     public function user()

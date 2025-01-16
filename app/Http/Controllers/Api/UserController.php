@@ -56,4 +56,14 @@ class UserController extends Controller
             'Students' => $studendts
         ]);
     }
+
+    public function getProfessors()
+    {
+        $professors = User::where('role_id','=',3)->get();
+
+        return response()->json([
+            'message' => 'List of professors',
+            'Professors' => $professors
+        ]);
+    }
 }
