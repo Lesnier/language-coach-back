@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AgendaController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\BillController;
 use App\Http\Controllers\Api\CourseController;
 use App\Http\Controllers\Api\FileController;
 use App\Http\Controllers\Api\ForumController;
@@ -61,4 +62,6 @@ Route::middleware('auth:sanctum')->group(function ()
     Route::post('/payments',[PaymentController::class,'store']);
     Route::post('/payments/{id}',[PaymentController::class,'update']);
     Route::delete('/payments/{id}',[PaymentController::class,'delete']);
+
+    Route::get('/bills',[BillController::class,'index']);
 });
