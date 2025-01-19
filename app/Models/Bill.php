@@ -42,10 +42,8 @@ class Bill extends Model
     public static function getMonthSubscriptions()
     {
         $month = Carbon::now()->month;
-        $year = Carbon::now()->year;
 
-        return Subscription::with('products')
-            ->whereYear('period_start','=',$year)
+         return  Subscription::with('products')
             ->where(function($query) use ($month) {
                 $query->whereMonth('period_start', '<=', $month)
                     ->whereMonth('period_end', '>=', $month);
@@ -54,17 +52,24 @@ class Bill extends Model
                 $query->whereMonth('period_start', '<', $month)
                     ->whereMonth('period_end', '>', $month);
             })
+             ->orWhere(function($query) use ($month) {
+                 $query->whereMonth('period_start', '>', $month)
+                     ->whereMonth('period_end', '>', $month);
+             })
+             ->orWhere(function($query) use ($month) {
+                 $query->whereMonth('period_start', '>', $month)
+                     ->whereMonth('period_end', '<', $month);
+             })
             ->where('status', 'Active')
             ->get();
-
     }
 
-    public static function billExist($subscription_id)
+    public static function billExist($subscription_id): bool
     {
         $subscription = Subscription::find($subscription_id);
         $bill = Bill::with('subscription')
             ->whereMonth('emission_date','=',Carbon::now()->month)
-            //->whereYear('emission_date','=',Carbon::now()->year)
+            ->whereYear('emission_date','=',Carbon::now()->year)
             ->where('subscription_id','=',$subscription->id)
             ->where('user_id','=',$subscription->user_id)
             ->get();
