@@ -26,7 +26,7 @@ class Bill extends Model
         return $this->belongsTo(Payment::class);
     }
 
-    public function isStartMont():bool
+    public static function isStartMont():bool
     {
         $day = Carbon::now()->day;
         if($day>=1 && $day<=5)

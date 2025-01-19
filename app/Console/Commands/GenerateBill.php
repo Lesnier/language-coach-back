@@ -39,7 +39,9 @@ class GenerateBill extends Command
      */
     public function handle()
     {
-        $this->info(Bill::generateBill());
+        if(Bill::isStartMont()){
+            $this->info(Bill::generateBill());
+        }
         return 0;
     }
 }
