@@ -111,11 +111,11 @@ class Bill extends Model
         }
         if(count($generated_bills)>0)
         {
-            return count($generated_bills) . " bills generated";
+            return count($generated_bills) . " bills generated.";
         }
         else
         {
-            return "0 bills generated";
+            return "0 bills generated.";
         }
     }
 }
