@@ -45,7 +45,7 @@ class NotificateBill extends Command
         foreach($bills as $bill){
             if(!$bill->payment && $bill->status == "Not paid")
             {
-                Mail::to($bill->user->mail)->send(new BillNotification("You have a bill to pay."));
+                Mail::to($bill->user->email)->send(new BillNotification("You have a bill to pay."));
                 $this->info("Email send to " . $bill->user->name);
             }
             if($bill->payment && $bill->status == "Not paid")
@@ -58,8 +58,8 @@ class NotificateBill extends Command
             {
                 $bill->notified = true;
                 $bill->save();
-                Mail::to($bill->user->mail)->send(new BillNotification("Payment validated"));
-                $this->info("Bill notification status changed for " . $bill->user->name);
+                Mail::to($bill->user->email)->send(new BillNotification("Payment validated"));
+                $this->info("Bill notification status changed for " . $bill->user->email);
             }
         }
         return 0;
