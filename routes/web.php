@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\SubscriptionController;
 use Illuminate\Support\Facades\Route;
 use TCG\Voyager\Facades\Voyager;
 
@@ -19,7 +21,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/subscription_price/{id}',[SubscriptionController::class,'getPrice']);
+Route::post('/product_prices',[ProductController::class,'getPrices']);
+
 Route::group(['prefix' => 'admin'], function () {
     Voyager::routes();
-
 });

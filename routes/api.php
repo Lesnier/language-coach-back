@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\CourseController;
 use App\Http\Controllers\Api\FileController;
 use App\Http\Controllers\Api\ForumController;
 use App\Http\Controllers\Api\PaymentController;
+use App\Http\Controllers\Api\SubscriptionController;
 use App\Http\Controllers\Api\TaskController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
@@ -64,4 +65,5 @@ Route::middleware('auth:sanctum')->group(function ()
     Route::delete('/payments/{id}',[PaymentController::class,'delete']);
 
     Route::get('/bills',[BillController::class,'index']);
+
 });

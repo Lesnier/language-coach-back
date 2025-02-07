@@ -47,4 +47,9 @@ class User extends \TCG\Voyager\Models\User
     {
         return $this->belongsTo(Role::class);
     }
+
+    public function scopeStudent($query)
+    {
+        return $query->where('role_id', 2);
+    }
 }

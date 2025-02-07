@@ -15,4 +15,5 @@ class BillController extends Controller
             ['Bills' => $bills]
         );
     }
+
 }
