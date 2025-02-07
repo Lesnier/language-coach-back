@@ -107,8 +107,8 @@ class Bill extends Model
                 $tax = 10;
                 $amount = $subtotal * $tax / 100;
                 $new_bill = Bill::create([
-                    'description' => 'Bill generated for the System',
-                    'emitter' => 'System',
+                    'description' => 'Bill description',
+                    'emitter' => 'Institution Name',
                     'user_id' => $s->user_id,
                     'subscription_id' => $s->id,
                     'notified' => false,
