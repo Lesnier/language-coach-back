@@ -104,18 +104,18 @@ class Bill extends Model
         {
             if(!Bill::billExist($s->id)){
                 $subtotal = Bill::getTotalProducts($s->id);
-                $tax = 10;
+                $tax = setting('site.default_tax');
                 $amount = $subtotal * $tax / 100;
                 $new_bill = Bill::create([
                     'description' => 'Bill description',
-                    'emitter' => 'Institution Name',
+                    'emitter' => setting('site.default_institution'),
                     'user_id' => $s->user_id,
                     'subscription_id' => $s->id,
                     'notified' => false,
                     'emission_date' => Carbon::now()->toDate(),
                     'status' => 'Not paid',
                     'subtotal' => $subtotal,
-                    'tax' => '10',
+                    'tax' => $tax,
                     'amount_tax' => $amount,
                     'total' => $subtotal + $amount,
                 ]);

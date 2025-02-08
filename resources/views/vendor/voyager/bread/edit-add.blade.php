@@ -214,13 +214,13 @@
 
             let emitter = document.getElementsByName("emitter")[0];
             if(emitter.value ===""){
-                emitter.value = 'Institution Name';
+                emitter.value = 'Institution';
             }
 
 
             let emission_date = document.getElementsByName("emission_date")[0];
             let todayDate = new Date();
-            if(emission_date){
+            if (emission_date) {
                 let day = String(todayDate.getDate()).padStart(2, '0');
                 let month = String(todayDate.getMonth() + 1).padStart(2, '0');
                 let year = todayDate.getFullYear();
@@ -231,7 +231,7 @@
             const suscripcionSelect = document.getElementsByName('subscription_id')[0];
 
             // Escuchar el evento de cambio en el campo de selección
-            $(suscripcionSelect).on('change', function() {
+            $(suscripcionSelect).on('change', function () {
                 const suscripcionId = this.value;
                 if (suscripcionId) {
                     // Hacer una solicitud AJAX para obtener los datos de la suscripción
@@ -268,7 +268,7 @@
 
             let productSelect = document.getElementsByName("bill_belongstomany_product_relationship[]")[0];
             let productosSeleccionados = [];
-            $(productSelect).on('change', function() {
+            $(productSelect).on('change', function () {
                 // Obtener los IDs seleccionados actualmente
                 const selectedIds = Array.from(productSelect.selectedOptions)
                     .map(option => option.value);
@@ -302,7 +302,7 @@
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                 },
-                body: JSON.stringify({ ids: ids })
+                body: JSON.stringify({ids: ids})
             })
                 .then(response => {
                     if (!response.ok) {
