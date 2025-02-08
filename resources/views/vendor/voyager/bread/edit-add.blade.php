@@ -245,7 +245,8 @@
                         })
                         .then(data => {
                             // Actualizar los campos de precio y total
-                            document.getElementsByName('subtotal')[0].value = data.total;
+                            let subtotal = document.getElementsByName('subtotal')[0];
+                            subtotal.value = data.total;
                         })
                         .catch(error => {
                             alert(error.message);
@@ -265,26 +266,36 @@
 
             });
 
-            let productSelect = document.getElementsByName('bill_belongstomany_product_relationship[]')[0];
+            let productSelect = document.getElementsByName("bill_belongstomany_product_relationship[]")[0];
+            let productosSeleccionados = [];
             $(productSelect).on('change', function() {
-                console.log("product select")
+                // Obtener los IDs seleccionados actualmente
                 const selectedIds = Array.from(productSelect.selectedOptions)
                     .map(option => option.value);
 
-                console.log('IDs seleccionados:', selectedIds);
-                // Llamar a la función para obtener los precios
-                getProductsPrice(selectedIds);
+                // Identificar los productos que se han añadido o eliminado
+                const productosAnadidos = selectedIds.filter(id => !productosSeleccionados.includes(id));
+                const productosEliminados = productosSeleccionados.filter(id => !selectedIds.includes(id));
 
+                // Actualizar la lista de productos seleccionados
+                productosSeleccionados = selectedIds;
+
+                // Si hay productos añadidos, obtener sus precios y sumarlos
+                if (productosAnadidos.length > 0) {
+                    obtenerPreciosProductos(productosAnadidos, 'sumar');
+                    console.log('p add')
+                }
+
+                // Si hay productos eliminados, obtener sus precios y restarlos
+                if (productosEliminados.length > 0) {
+                    obtenerPreciosProductos(productosEliminados, 'restar');
+                    console.log('p delete')
+                }
             });
         });
 
-        function getProductsPrice(ids)
-        {
-            if (ids.length === 0) {
-                console.log('No selected product');
-                return;
-            }
-
+        function obtenerPreciosProductos(ids, accion) {
+            // Hacer la solicitud AJAX
             fetch('/product_prices', {
                 method: 'POST',
                 headers: {
@@ -295,23 +306,32 @@
             })
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error('Get products prices error');
+                        throw new Error('Error al obtener los precios de los productos.');
                     }
                     return response.json();
                 })
                 .then(data => {
-                    console.log('Products price', data.prices);
+                    console.log('Precios obtenidos:', data.prices);
 
-                    const total = data.prices.reduce((sum, price) => sum + price, 0);
-                    let subtotal = document.getElementsByName('subtotal')[0];
-                    let taxSelect = document.getElementsByName('tax')[0];
+                    // Obtener el total actual de la factura
+                    const facturaInput = document.getElementsByName('subtotal')[0];
+                    let total = parseFloat(facturaInput.value) || 0;
+
+                    // Sumar o restar los precios según la acción
+                    if (accion === 'sumar') {
+                        total += data.prices.reduce((sum, price) => sum + price, 0);
+                    } else if (accion === 'restar') {
+                        total -= data.prices.reduce((sum, price) => sum + price, 0);
+                    }
+
+                    // Actualizar el input de la factura
+                    facturaInput.value = total.toFixed(2); // Asegura 2 decimales
+                    let tax = document.getElementsByName('tax')[0];
                     let amountTax = document.getElementsByName('amount_tax')[0];
-                    let totalBill = document.getElementsByName('total')[0];
+                    let totalToPay = document.getElementsByName('total')[0];
 
-                    subtotal.value = Number(subtotal.value) + Number(total.toFixed(2));
-                    amountTax.value = Number(subtotal.value) * Number(taxSelect.value) / 100;
-                    totalBill.value = Number(amountTax.value) + Number(subtotal.value);
-
+                    amountTax.value = Number(facturaInput.value) * Number(tax.value) / 100;
+                    totalToPay.value = Number(amountTax.value) + Number(facturaInput.value);
                 })
                 .catch(error => {
                     console.error('Error:', error);
