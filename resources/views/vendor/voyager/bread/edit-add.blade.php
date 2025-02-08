@@ -211,9 +211,7 @@
         });
 
         document.addEventListener("DOMContentLoaded", function() {
-            document.querySelector('input[name="subtotal"]').disabled = true;
-            document.querySelector('input[name="amount_tax"]').disabled = true;
-            document.querySelector('input[name="total"]').disabled = true;
+
             let emitter = document.getElementsByName("emitter")[0];
             if(emitter.value ===""){
                 emitter.value = 'Institution Name';
@@ -253,7 +251,6 @@
                             alert(error.message);
                         });
                 } else {
-                    // Limpiar los campos si no se selecciona una suscripción
                     document.getElementsByName('subtotal')[0].value = '';
                 }
             });
