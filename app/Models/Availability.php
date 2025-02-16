@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Auth;
 
 class Availability extends Model
 {
@@ -14,5 +15,14 @@ class Availability extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function scopeProfessor($query)
+    {
+        if(Auth::user()->role_id == 3)
+        {
+            return $query->where('professor_id', Auth::user()->id);
+        }
+        return $query;
     }
 }
