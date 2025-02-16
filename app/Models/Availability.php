@@ -21,7 +21,7 @@ class Availability extends Model
     {
         if(Auth::user()->role_id == 3)
         {
-            return $query->where('professor_id', Auth::user()->id);
+            return $query->where('user_id', Auth::user()->id);
         }
         return $query;
     }
