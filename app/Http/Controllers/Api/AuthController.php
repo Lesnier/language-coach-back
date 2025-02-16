@@ -22,7 +22,7 @@ class AuthController extends Controller
         {
             return response()->json(['message' => 'Invalid credentials'], 401);
         }
-        if(!in_array($user->role_id,[2,4]))
+        if($user->role_id != 2)
         {
             return response()->json(['message' => 'Invalid role'], 401);
         }
