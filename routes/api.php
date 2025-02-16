@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AgendaController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\AvailabilityController;
 use App\Http\Controllers\Api\BillController;
 use App\Http\Controllers\Api\CourseController;
 use App\Http\Controllers\Api\FileController;
@@ -35,6 +36,8 @@ Route::middleware('auth:sanctum')->group(function ()
     Route::get('/professors', [UserController::class, 'getProfessors']);
     Route::post('/change-password', [UserController::class, 'changePass']);
     Route::post('/logout', [AuthController::class, 'logout']);
+
+    Route::post('/availabilities', [AvailabilityController::class, 'getAvailability']);
 
     Route::get('/agendas', [AgendaController::class, 'index']);
     Route::post('/agendas', [AgendaController::class, 'store']);
