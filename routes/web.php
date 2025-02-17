@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\SubscriptionController;
+use App\Http\Controllers\ImportAvailabilitiesController;
+
 use Illuminate\Support\Facades\Route;
 use TCG\Voyager\Facades\Voyager;
 
@@ -27,3 +29,7 @@ Route::post('/product_prices',[ProductController::class,'getPrices']);
 Route::group(['prefix' => 'admin'], function () {
     Voyager::routes();
 });
+
+
+Route::get('/admin/import-csv', [ImportAvailabilitiesController::class, 'showImportForm'])->name('admin.import-csv');
+Route::post('/admin/import-csv', [ImportAvailabilitiesController::class, 'import'])->name('admin.import.process');
