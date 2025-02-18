@@ -37,7 +37,7 @@ Route::middleware('auth:sanctum')->group(function ()
     Route::post('/change-password', [UserController::class, 'changePass']);
     Route::post('/logout', [AuthController::class, 'logout']);
 
-    Route::post('/availabilities', [AvailabilityController::class, 'getAvailability']);
+    Route::get('/availabilities', [AvailabilityController::class, 'getAvailability']);
 
     Route::get('/agendas', [AgendaController::class, 'index']);
     Route::post('/agendas', [AgendaController::class, 'store']);

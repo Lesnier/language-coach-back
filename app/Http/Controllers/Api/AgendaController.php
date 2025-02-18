@@ -9,6 +9,7 @@ use App\Models\Availability;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class AgendaController extends Controller
@@ -22,6 +23,7 @@ class AgendaController extends Controller
             ->whereDate('date', '>=', $currentDate)
             ->orderBy('date')
             ->orderBy('time')
+            ->with('professor')
             ->get();
 
         return response()->json([
@@ -29,53 +31,64 @@ class AgendaController extends Controller
             'agendas' => $agendas,
         ]);
     }
+
     public function store(Request $request)
     {
-        $validatedData = $request->validate([
-            'date' => 'required|date',
-            'time' => 'required|date_format:H:i',
-        ]);
-
-        if($this->isWeekend($validatedData['date']))
-        {
-            return response()->json([
-                'error'=>'The selected is a weekend.'
+        try {
+            $validatedData = $request->validate([
+                'date' => 'required|date',
+                'time' => 'required|date_format:H:i',
             ]);
-        }
 
-        if($this->haveAgenda($validatedData['date'], auth()->user()->id))
-        {
-            return response()->json([
-                'error'=>'The user have an agenda in the selected date'
-            ]);
-        }
+            if ($this->isWeekend($validatedData['date'])) {
+                return response()->json([
+                    'error' => 'The selected is a weekend.'
+                ]);
+            }
 
-        $user = auth()->user();
+            if ($this->haveAgenda($validatedData['date'], auth()->user()->id)) {
+                return response()->json([
+                    'error' => 'The user have an agenda in the selected date'
+                ]);
+            }
 
-        $availability = Availability::where('day_of_week', $validatedData['date'])
-            ->where(function($query) use ($validatedData)
-            {
-                $query->where('start_time', '<=', Carbon::parse($validatedData['time'])->toTimeString())
+            $user = auth()->user();
+
+            $availability = Availability::where('day_of_week', $validatedData['date'])
+                ->where(function ($query) use ($validatedData) {
+                    $query->where('start_time', '<=', Carbon::parse($validatedData['time'])->toTimeString())
                         ->where('end_time', '>', Carbon::parse($validatedData['time'])->toTimeString());
-            })
-            ->where('is_available','=',1)
-            ->with('user')
-            ->get();
+                })
+                ->where('is_available', '=', 1)
+                ->with('user')
+                ->get();
 
-        $professor_id = $availability->first()->user_id;
+            if ($availability->isEmpty()) {
+                $professor_id = null;
+            }else{
+                $professor_id = $availability->first()->user_id;
+            }
 
-        $agenda = Agenda::create([
-            'date' => $validatedData['date'],
-            'time' => $validatedData['time'],
-            'user_id' => $user->id,
-            'professor_id' => $professor_id,
-            'state' => 'Active'
-        ]);
 
-        return response()->json([
-            'message' => 'Agenda make success',
-            'agenda' => $agenda,
-        ], 201);
+            $agenda = Agenda::create([
+                'date' => $validatedData['date'],
+                'time' => $validatedData['time'],
+                'user_id' => $user->id,
+                'professor_id' => $professor_id,
+                'state' => 'Active'
+            ]);
+
+            return response()->json([
+                'message' => 'Agenda make success',
+                'agenda' => $agenda,
+            ], 201);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Excepcion al agendar',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 
     public function update(Request $request, $agenda_id)
@@ -92,20 +105,18 @@ class AgendaController extends Controller
         $agenda->time = $validatedData['time'];
         $agenda->professor_id = $validatedData['professor_id'];
 
-    if($this->isWeekend($validatedData['date']))
-    {
-        return response()->json([
-            'error'=>'The selected date is a weekend.'
-        ]);
-    }else
-    {
-        $agenda->save();
+        if ($this->isWeekend($validatedData['date'])) {
+            return response()->json([
+                'error' => 'The selected date is a weekend.'
+            ]);
+        } else {
+            $agenda->save();
 
-        return response()->json([
-            'message' => 'Agenda updated success',
-            'agenda' => $agenda,
-        ], 201);
-    }
+            return response()->json([
+                'message' => 'Agenda updated success',
+                'agenda' => $agenda,
+            ], 201);
+        }
     }
 
 
@@ -114,38 +125,38 @@ class AgendaController extends Controller
         $weekday = date('N', strtotime($date));
         return ($weekday >= 6); // 6 y 7 representan sábados y domingos
     }
-    function isProfessor($user_id):bool
+
+    function isProfessor($user_id): bool
     {
         $user = User::find($user_id);
         $rol = $user->role->id;
         return $rol == 3;
     }
-    public function haveAgenda($date,$user_id):bool
+
+    public function haveAgenda($date, $user_id): bool
     {
         return Agenda::where('user_id', $user_id)
             ->whereDate('date', $date)
             ->exists();
-
     }
+
     public function cancelAgenda($agenda_id)
     {
         $agenda = Agenda::find($agenda_id);
-        if (!$agenda)
-        {
+        if (!$agenda) {
             return response()->json([
                 'message' => 'Agenda not found',
-            ],404);
-        }
-        else
-        {
+            ], 404);
+        } else {
             $agenda->state = "Cancelled";
             $agenda->save();
             return response()->json([
                 'message' => 'Agenda cancelled',
                 'agenda' => $agenda
-            ],201);
+            ], 201);
         }
     }
+
     public function agendaConfirmationEmail(Request $request)
     {
         $validatedData = $request->validate([
@@ -156,14 +167,11 @@ class AgendaController extends Controller
         $email = $validatedData['email'];
         $emailBody = $validatedData['emailBody'];
 
-        $existEmail = User::where('email','=',$email)->first();
-        if($existEmail)
-        {
+        $existEmail = User::where('email', '=', $email)->first();
+        if ($existEmail) {
             Mail::to($email)->send(new AgendaReminder($emailBody));
             return response()->json(['message' => 'Email sent to ' . $email]);
-        }
-        else
-        {
+        } else {
             return response()->json(['error' => $email . ' email not found. ']);
         }
 //        $agendasHoy = Agenda::whereDate('date', Carbon::now()->toDateString())->get();

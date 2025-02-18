@@ -19,9 +19,13 @@ class Agenda extends Model
         'state'
     ];
 
-    public function user()
+    public function professor()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'professor_id');
+    }
+    public function student()
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function scopeProfessor($query)
