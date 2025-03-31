@@ -181,4 +181,21 @@ class AgendaController extends Controller
         //return response()->json('correo enviado');
 //        return response()->json(Carbon::now()->toTimeString());
     }
+
+    public function destroy($agenda_id)
+    {
+        $agenda = Agenda::find($agenda_id);
+        
+        if (!$agenda) {
+            return response()->json([
+                'message' => 'Agenda not found',
+            ], 404);
+        }
+        
+        $agenda->delete();
+        
+        return response()->json([
+            'message' => 'Agenda deleted successfully',
+        ], 200);
+    }
 }
