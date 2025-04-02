@@ -51,11 +51,19 @@ class UserController extends Controller
 
     public function getStudents()
     {
-        $studendts = User::where('role_id','=',2)->get();
+        $students = User::where('role_id', '=', 2)->get();
+
+        // Add profile_picture_url to each student
+        $students = $students->map(function ($student) {
+            if ($student->profile_picture) {
+                $student->profile_picture_url = asset('storage/' . $student->profile_picture);
+            }
+            return $student;
+        });
 
         return response()->json([
             'message' => 'List of students',
-            'Students' => $studendts
+            'Students' => $students
         ]);
     }
 
