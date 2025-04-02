@@ -45,6 +45,7 @@ class User extends \TCG\Voyager\Models\User
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'is_outstanding' => 'boolean', // Cast is_outstanding as boolean
     ];
 
     public function role()
