@@ -5,8 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Task;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
+use Exception;
 
 class TaskController extends Controller
 {
@@ -15,6 +16,15 @@ class TaskController extends Controller
         $tasks = Task::where('user_id', auth()->id())
             ->with('course')
             ->get();
+
+        // Transform the collection to include full image URLs and hide the image property
+        $tasks = $tasks->map(function($task) {
+            if ($task->image) {
+                $task->image_url = asset('storage/' . $task->image);
+                unset($task->image); // Remove the image property
+            }
+            return $task;
+        });
 
         return response()->json($tasks);
     }
@@ -40,6 +50,18 @@ class TaskController extends Controller
 
         $task->save();
 
+        // Add image URL to the response if image exists and hide the image property
+        if ($task->image) {
+            $task->image_url = asset('storage/' . $task->image);
+            $originalTask = clone $task; // Create a copy to return in the response
+            unset($originalTask->image); // Remove the image property from the response
+            
+            return response()->json([
+                'message' => 'Task created',
+                'Task' => $originalTask
+            ], 201);
+        }
+
         return response()->json([
             'message' => 'Task created',
             'Task' => $task
@@ -48,14 +70,30 @@ class TaskController extends Controller
 
     private function storeFile($file)
     {
-        $filename = $file->getClientOriginalName();
-        $filename = pathinfo($filename,PATHINFO_FILENAME);
-        $name_file = str_replace(" ","_",$filename);
-        $extension = $file->getClientOriginalExtension();
-        $final_name = date("His") . "_" . $name_file . "." . $extension;
-        $file->move(storage_path('app/public/tasks'),$final_name);
-
-        return 'tasks/' . $final_name;
+        try {
+            // Make sure the directory exists
+            if (!Storage::disk('public')->exists('tasks')) {
+                Storage::disk('public')->makeDirectory('tasks');
+            }
+            
+            $filename = $file->getClientOriginalName();
+            $filename = pathinfo($filename, PATHINFO_FILENAME);
+            $name_file = str_replace(" ", "_", $filename);
+            $extension = $file->getClientOriginalExtension();
+            $final_name = date("His") . "_" . $name_file . "." . $extension;
+            
+            // Store using Laravel's Storage facade
+            $path = $file->storeAs('tasks', $final_name, 'public');
+            
+            // Log successful upload
+            Log::info("File uploaded successfully: {$path}");
+            
+            return $path;
+        } catch (Exception $e) {
+            // Log the error
+            Log::error("File upload failed: " . $e->getMessage());
+            throw $e;
+        }
     }
 
     public function update(Request $request, $id)
@@ -77,7 +115,8 @@ class TaskController extends Controller
             $fileAdd = $request->file('image');
             if($task->image)
             {
-                unlink(storage_path('app/public/' . $task->image));
+                // Use Storage facade instead of unlink
+                Storage::disk('public')->delete($task->image);
             }
             $newFile = $this->storeFile($fileAdd);
             $task->image = $newFile;
@@ -85,9 +124,22 @@ class TaskController extends Controller
 
         $task->save();
 
+        // Add image URL to the response if image exists and hide the image property
+        if ($task->image) {
+            $task->image_url = asset('storage/' . $task->image);
+            $originalTask = clone $task; // Create a copy to return in the response
+            unset($originalTask->image); // Remove the image property from the response
+            
+            return response()->json([
+                'message' => 'Task updated',
+                'task' => $originalTask
+            ]);
+        }
+
         return response()->json([
             'message' => 'Task updated',
-            'task' => $task]);
+            'task' => $task
+        ]);
     }
 
     public function delete($id)
@@ -99,7 +151,8 @@ class TaskController extends Controller
         }
         if($task->image)
         {
-            unlink(storage_path('app/public/' .$task->image));
+            // Use Storage facade instead of unlink
+            Storage::disk('public')->delete($task->image);
         }
         $task->delete();
         return response()->json(['message' => 'Task deleted']);
