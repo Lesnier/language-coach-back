@@ -22,6 +22,9 @@ class User extends \TCG\Voyager\Models\User
         'name',
         'email',
         'password',
+        'profile_picture', // Added profile_picture
+        'birth_date', // Added birth_date
+        'is_outstanding', // Added is_outstanding
     ];
 
     /**
@@ -32,6 +35,7 @@ class User extends \TCG\Voyager\Models\User
     protected $hidden = [
         'password',
         'remember_token',
+        'profile_picture', // Hide profile_picture from serialization
     ];
 
     /**
