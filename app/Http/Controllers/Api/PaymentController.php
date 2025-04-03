@@ -6,13 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Models\Payment;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class PaymentController extends Controller
 {
     public function index()
     {
-        $payments = Payment::with('user')->get();
+        $user = auth()->user(); // Get the authenticated user
+        $payments = Payment::with('user')->where('user_id', $user->id)->get(); // Filter by user_id
         return response()->json($payments);
     }
 
