@@ -24,31 +24,6 @@ class UserController extends Controller
 
     }
 
-    public function changePass(Request $request)
-    {
-        $credentials = $request->only('current_password', 'new_password', 'confirm_password');
-
-        /** @var User $user */ // Explicitly specify the type
-        $user = Auth::user();
-
-        if (!$user) {
-            return response()->json(['message' => 'User not authenticated'], 401);
-        }
-
-        if (!Hash::check($credentials['current_password'], $user->password)) {
-            return response()->json(['message' => 'Current password is incorrect'], 422);
-        }
-
-        if ($credentials['new_password'] !== $credentials['confirm_password']) {
-            return response()->json(['message' => 'Passwords do not match'], 422);
-        }
-
-        $user->password = bcrypt($credentials['new_password']);
-        $user->save(); // Now the save method will work correctly
-
-        return response()->json(['message' => 'Password changed successfully'], 200);
-    }
-
     public function getStudents()
     {
         $students = User::where('role_id', '=', 2)->get();
@@ -118,8 +93,6 @@ class UserController extends Controller
             'name' => 'sometimes|string|max:255',
             'birth_date' => 'sometimes|date',
             'profile_picture' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'current_password' => 'sometimes|required_with:new_password,confirm_password',
-            'new_password' => 'sometimes|required_with:current_password|same:confirm_password', // Use 'same:confirm_password'
         ]);
 
         // Update name and birth_date
@@ -140,20 +113,37 @@ class UserController extends Controller
             $user->profile_picture = $path;
         }
 
-        // Update password
-        if (isset($validatedData['current_password'])) {
-            if (!Hash::check($validatedData['current_password'], $user->password)) {
-                return response()->json(['message' => 'Current password is incorrect'], 422);
-            }
-            $user->password = bcrypt($validatedData['new_password']);
-        }
-
         $user->save();
 
         return response()->json([
             'message' => 'Profile updated successfully',
             'user' => $user,
         ]);
+    }
+
+    public function updatePassword(Request $request)
+    {
+        /** @var User $user */ // Explicitly specify the type
+        $user = Auth::user();
+
+        if (!$user) {
+            return response()->json(['message' => 'User not authenticated'], 401);
+        }
+
+        $validatedData = $request->validate([
+            'current_password' => 'required_with:new_password,confirm_password',
+            'new_password' => 'required_with:current_password|same:confirm_password',
+            'confirm_password' => 'required_with:current_password,new_password',
+        ]);
+
+        if (!Hash::check($validatedData['current_password'], $user->password)) {
+            return response()->json(['message' => 'Current password is incorrect'], 422);
+        }
+
+        $user->password = bcrypt($validatedData['new_password']);
+        $user->save();
+
+        return response()->json(['message' => 'Password updated successfully'], 200);
     }
 
     private function storeFile($file, $directory)

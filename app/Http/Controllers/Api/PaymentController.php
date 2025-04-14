@@ -19,13 +19,12 @@ class PaymentController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'user_id' => 'required',
             'transaction_code' => 'required',
             'image' => 'required'
         ]);
 
         $payment = new Payment();
-        $payment->user_id = $validatedData['user_id'];
+        $payment->user_id = auth()->id(); // Use authenticated user's ID
         $payment->transaction_code = $validatedData['transaction_code'];
 
         if ($request->hasFile('image'))
