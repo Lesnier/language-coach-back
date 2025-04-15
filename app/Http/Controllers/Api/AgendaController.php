@@ -32,63 +32,52 @@ class AgendaController extends Controller
         ]);
     }
 
+    /**
+     * Store a newly created agenda in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function store(Request $request)
     {
-        try {
-            $validatedData = $request->validate([
-                'date' => 'required|date',
-                'time' => 'required|date_format:H:i',
-            ]);
+        $validated = $request->validate([
+            'professor_id' => 'required|exists:users,id',
+            'date' => 'required|date|date_format:Y-m-d',
+            'time' => 'required|date_format:H:i:s',
+        ]);
 
-            if ($this->isWeekend($validatedData['date'])) {
-                return response()->json([
-                    'error' => 'The selected is a weekend.'
-                ]);
-            }
-
-            if ($this->haveAgenda($validatedData['date'], auth()->user()->id)) {
-                return response()->json([
-                    'error' => 'The user have an agenda in the selected date'
-                ]);
-            }
-
-            $user = auth()->user();
-
-            $availability = Availability::where('day_of_week', $validatedData['date'])
-                ->where(function ($query) use ($validatedData) {
-                    $query->where('start_time', '<=', Carbon::parse($validatedData['time'])->toTimeString())
-                        ->where('end_time', '>', Carbon::parse($validatedData['time'])->toTimeString());
-                })
-                ->where('is_available', '=', 1)
-                ->with('user')
-                ->get();
-
-            if ($availability->isEmpty()) {
-                $professor_id = null;
-            }else{
-                $professor_id = $availability->first()->user_id;
-            }
-
-
-            $agenda = Agenda::create([
-                'date' => $validatedData['date'],
-                'time' => $validatedData['time'],
-                'user_id' => $user->id,
-                'professor_id' => $professor_id,
-                'state' => 'Active'
-            ]);
-
+        // Check if professor has availability on the requested date and time
+        $hasAvailability = \App\Models\Availability::where('user_id', $request->professor_id)
+            ->whereDate('date', $request->date)
+            ->whereTime('start_time', '<=', $request->time)
+            ->whereTime('end_time', '>', $request->time)
+            ->exists();
+            
+        if (!$hasAvailability) {
             return response()->json([
-                'message' => 'Agenda make success',
-                'agenda' => $agenda,
-            ], 201);
-
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Excepcion al agendar',
-                'error' => $e->getMessage(),
-            ], 500);
+                'message' => 'Validation error',
+                'errors' => [
+                    'professor_id' => ['The selected professor is not available at the requested date and time.']
+                ]
+            ], 422);
         }
+        
+        // Create the agenda
+        $agenda = new \App\Models\Agenda();
+        $agenda->professor_id = $request->professor_id;
+        $agenda->user_id = auth()->id(); // Set the authenticated student as the user
+        $agenda->date = $request->date;
+        $agenda->time = $request->time;
+        $agenda->state = 'Active'; // Default state
+        $agenda->save();
+        
+        // Load the professor relationship for the response
+        $agenda->load('professor');
+        
+        return response()->json([
+            'message' => 'Agenda created successfully',
+            'data' => $agenda
+        ], 201);
     }
 
     public function update(Request $request, $agenda_id)

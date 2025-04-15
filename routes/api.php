@@ -72,4 +72,6 @@ Route::middleware('auth:sanctum')->group(function ()
 
     Route::get('/bills',[BillController::class,'index']);
 
+    // Professor routes
+    Route::get('/professors/available', [App\Http\Controllers\Api\ProfessorController::class, 'getAvailableProfessors']);
 });

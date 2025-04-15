@@ -2,27 +2,27 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Model;
 
 class Availability extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'day_of_week','start_time','end_time', 'is_available'];
+    protected $fillable = [
+        'user_id',
+        'start_time', // This should contain both date and time
+        'end_time',   // This should contain both date and time
+        // Any other fields
+    ];
+
+    protected $casts = [
+        'start_time' => 'datetime',
+        'end_time' => 'datetime',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function scopeProfessor($query)
-    {
-        if(Auth::user()->role_id == 3)
-        {
-            return $query->where('user_id', Auth::user()->id);
-        }
-        return $query;
     }
 }

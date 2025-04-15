@@ -29,7 +29,7 @@ class ImportAvailabilitiesController extends Controller
         while (($row = fgetcsv($handle, 1000, ",")) !== FALSE) {
             Availability::create([
                 'user_id' => Auth::id(),
-                'day_of_week' => $row[0], // Ajusta según los campos del CSV
+                'date' => $row[0], // Ajusta según los campos del CSV
                 'start_time' => $row[1],
                 'end_time' => $row[2],
                 'is_available' => $row[3],
