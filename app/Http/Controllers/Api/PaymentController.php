@@ -16,6 +16,17 @@ class PaymentController extends Controller
         return response()->json($payments);
     }
 
+    public function show($id)
+    {
+        $payment = Payment::find($id);
+        
+        if (!$payment) {
+            return response()->json(['error' => 'Payment not found'], 404);
+        }
+
+        return response()->json($payment);
+    }
+
     public function store(Request $request)
     {
         $validatedData = $request->validate([
