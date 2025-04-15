@@ -13,7 +13,7 @@ class FileController extends Controller
 {
     public function index()
     {
-        $files = ModelFile::all();
+        $files = ModelFile::orderBy('created_at', 'desc')->get();
         return response()->json($files);
     }
 
