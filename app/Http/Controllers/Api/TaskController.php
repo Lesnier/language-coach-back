@@ -15,6 +15,7 @@ class TaskController extends Controller
     {
         $tasks = Task::where('user_id', auth()->id())
             ->with('course')
+            ->orderBy('created_at', 'desc')
             ->get();
 
         // Transform the collection to include full image URLs and hide the image property
