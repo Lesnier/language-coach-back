@@ -103,4 +103,51 @@ class FileController extends Controller
         $file->delete();
         return response()->json(['message' => 'File deleted']);
     }
+
+    public function download($id)
+    {
+        $file = ModelFile::find($id);
+        
+        if (!$file) {
+            return response()->json(['error' => 'File not found'], 404);
+        }
+        
+        $filePath = storage_path('app/public/' . $file->file);
+        
+        if (!file_exists($filePath)) {
+            return response()->json(['error' => 'File not found on the server'], 404);
+        }
+
+        // Extract original file extension
+        $extension = pathinfo($file->file, PATHINFO_EXTENSION);
+        
+        // Create a readable filename for download
+        $downloadFilename = Str::slug($file->name) . '.' . $extension;
+        
+        return response()->download($filePath, $downloadFilename);
+    }
+
+    public function getByFilename($filename)
+    {
+        // Try to find the file in the database by its stored filename
+        $file = ModelFile::where('file', 'LIKE', '%' . $filename)->first();
+        
+        if (!$file) {
+            // If not found by exact match, try with the files/ prefix
+            $file = ModelFile::where('file', 'LIKE', 'files/' . $filename)->first();
+        }
+        
+        if (!$file) {
+            return response()->json(['error' => 'File not found'], 404);
+        }
+        
+        $filePath = storage_path('app/public/' . $file->file);
+        
+        if (!file_exists($filePath)) {
+            return response()->json(['error' => 'File not found on the server'], 404);
+        }
+
+        // Return the file with appropriate content type
+        return response()->file($filePath);
+    }
 }

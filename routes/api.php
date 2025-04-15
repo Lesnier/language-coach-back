@@ -25,10 +25,17 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+// Public routes
+Route::post('/login', [AuthController::class, 'login']);
+// Public file access route
+// Route::get('/files/{filename}', [FileController::class, 'getByFilename'])->where('filename', '.*');
+Route::get('/files/{filename}', [FileController::class, 'getByFilename'])->where('filename', '.*');
+
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-Route::post('/login', [AuthController::class, 'login']);
+
+// Protected routes
 Route::middleware('auth:sanctum')->group(function ()
 {
     Route::get('/user-info', [UserController::class, 'showInfo']);
@@ -61,9 +68,11 @@ Route::middleware('auth:sanctum')->group(function ()
     Route::delete('/tasks/{id}',[TaskController::class,'delete']);
 
     Route::get('/files',[FileController::class,'index']);
+
     Route::post('/files',[FileController::class,'store']);
     Route::post('/files/{id}',[FileController::class,'update']);
     Route::delete('/files/{id}',[FileController::class,'delete']);
+
 
     Route::get('/payments',[PaymentController::class,'index']);
     Route::post('/payments',[PaymentController::class,'store']);
