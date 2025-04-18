@@ -19,7 +19,7 @@ class AvailabilityController extends Controller
             return [
                 'id' => $availability->id,
                 'professor_id' => $availability->user_id, // Renamed user_id to professor_id
-                'date' => $availability->date,
+                'date' => $availability->day_of_week,
                 'start_time' => $availability->start_time,
                 'end_time' => $availability->end_time
             ];
