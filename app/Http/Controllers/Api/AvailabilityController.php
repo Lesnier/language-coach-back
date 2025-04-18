@@ -11,7 +11,7 @@ class AvailabilityController extends Controller
     public function getAvailability(Request $request)
     {
         $availabilities = Availability::where('is_available', true)
-            ->select(['id', 'user_id', 'date', 'start_time', 'end_time'])
+            ->select(['id', 'user_id', 'day_of_week', 'start_time', 'end_time'])
             ->get();
 
         // Transform the availabilities to rename user_id to professor_id and drop the user object
