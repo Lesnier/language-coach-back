@@ -51,7 +51,7 @@ Route::middleware('auth:sanctum')->group(function ()
     Route::post('/agendas', [AgendaController::class, 'store']);
     Route::post('/agendas/{agenda_id}', [AgendaController::class, 'update']);
     Route::delete('/agendas/{agenda_id}', [AgendaController::class, 'destroy']);
-    
+
     Route::post('/agendas-confirmation', [AgendaController::class, 'agendaConfirmationEmail']);
     Route::post('/agendas-cancel/{agenda_id}', [AgendaController::class, 'cancelAgenda']);
 
@@ -73,7 +73,6 @@ Route::middleware('auth:sanctum')->group(function ()
     Route::post('/files/{id}',[FileController::class,'update']);
     Route::delete('/files/{id}',[FileController::class,'delete']);
 
-
     Route::get('/payments',[PaymentController::class,'index']);
     Route::get('/payments/{id}',[PaymentController::class,'show']);
     Route::post('/payments',[PaymentController::class,'store']);
@@ -81,6 +80,7 @@ Route::middleware('auth:sanctum')->group(function ()
     Route::delete('/payments/{id}',[PaymentController::class,'delete']);
 
     Route::get('/bills',[BillController::class,'index']);
+    Route::get('/bills-detail/{id}',[BillController::class,'show']);
 
     // Professor routes
     Route::get('/professors/available', [App\Http\Controllers\Api\ProfessorController::class, 'getAvailableProfessors']);

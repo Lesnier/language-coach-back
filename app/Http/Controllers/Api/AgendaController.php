@@ -52,7 +52,7 @@ class AgendaController extends Controller
             ->whereTime('start_time', '<=', $request->time)
             ->whereTime('end_time', '>', $request->time)
             ->exists();
-            
+
         if (!$hasAvailability) {
             return response()->json([
                 'message' => 'Validation error',
@@ -61,7 +61,7 @@ class AgendaController extends Controller
                 ]
             ], 422);
         }
-        
+
         // Create the agenda
         $agenda = new \App\Models\Agenda();
         $agenda->professor_id = $request->professor_id;
@@ -70,10 +70,10 @@ class AgendaController extends Controller
         $agenda->time = $request->time;
         $agenda->state = 'Active'; // Default state
         $agenda->save();
-        
+
         // Load the professor relationship for the response
         $agenda->load('professor');
-        
+
         return response()->json([
             'message' => 'Agenda created successfully',
             'data' => $agenda
@@ -174,15 +174,15 @@ class AgendaController extends Controller
     public function destroy($agenda_id)
     {
         $agenda = Agenda::find($agenda_id);
-        
+
         if (!$agenda) {
             return response()->json([
                 'message' => 'Agenda not found',
             ], 404);
         }
-        
+
         $agenda->delete();
-        
+
         return response()->json([
             'message' => 'Agenda deleted successfully',
         ], 200);

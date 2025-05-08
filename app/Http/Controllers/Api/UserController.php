@@ -31,6 +31,8 @@ class UserController extends Controller
         // Add profile_picture_url to each student
         $students = $students->map(function ($student) {
             if ($student->profile_picture) {
+                $student->profile_picture = str_replace('\\', '/', $student->profile_picture);
+
                 $student->profile_picture_url = asset('storage/' . $student->profile_picture);
             }
             return $student;

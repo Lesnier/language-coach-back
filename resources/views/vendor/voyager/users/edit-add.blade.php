@@ -59,6 +59,14 @@
                                 @endif
                                 <input type="password" class="form-control" id="password" name="password" value="" autocomplete="new-password">
                             </div>
+                            <div class="form-group">
+                                <label for="profile_picture">Imagen</label>
+                                <input type="file" class="form-control" id="profile_picture" name="profile_picture" accept="image/*">
+                            </div>
+                            <div class="form-group">
+                                <label for="is_outstanding">Is Outstanding</label>
+                                <input type="checkbox" class="custom-control-input" id="is_outstanding" name="is_outstanding" >
+                            </div>
                             @can('editRoles', $dataTypeContent)
                                 <div class="form-group">
                                     <label for="default_role">{{ __('voyager::profile.role_default') }}</label>

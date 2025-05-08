@@ -35,7 +35,7 @@ class User extends \TCG\Voyager\Models\User
     protected $hidden = [
         'password',
         'remember_token',
-        'profile_picture', // Hide profile_picture from serialization
+//        'profile_picture', // Hide profile_picture from serialization
     ];
 
     /**

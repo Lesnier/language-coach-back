@@ -34,13 +34,15 @@ class TaskController extends Controller
     {
         $validatedData = $request->validate([
             'teacher_note' => 'required',
-            'course_id' => 'required|exists:courses,id'
+            'course_id' => 'required|exists:courses,id',
+            'professor_id' => 'required'
         ]);
 
         $task = new Task();
         $task->user_id = auth()->id();
         $task->course_id = $validatedData['course_id'];
         $task->teacher_note = $validatedData['teacher_note'];
+        $task->professor_id = $validatedData['professor_id'];
 
         if ($request->hasFile('image'))
         {
@@ -56,7 +58,7 @@ class TaskController extends Controller
             $task->image_url = asset('storage/' . $task->image);
             $originalTask = clone $task; // Create a copy to return in the response
             unset($originalTask->image); // Remove the image property from the response
-            
+
             return response()->json([
                 'message' => 'Task created',
                 'Task' => $originalTask
@@ -76,19 +78,19 @@ class TaskController extends Controller
             if (!Storage::disk('public')->exists('tasks')) {
                 Storage::disk('public')->makeDirectory('tasks');
             }
-            
+
             $filename = $file->getClientOriginalName();
             $filename = pathinfo($filename, PATHINFO_FILENAME);
             $name_file = str_replace(" ", "_", $filename);
             $extension = $file->getClientOriginalExtension();
             $final_name = date("His") . "_" . $name_file . "." . $extension;
-            
+
             // Store using Laravel's Storage facade
             $path = $file->storeAs('tasks', $final_name, 'public');
-            
+
             // Log successful upload
             Log::info("File uploaded successfully: {$path}");
-            
+
             return $path;
         } catch (Exception $e) {
             // Log the error
@@ -130,7 +132,7 @@ class TaskController extends Controller
             $task->image_url = asset('storage/' . $task->image);
             $originalTask = clone $task; // Create a copy to return in the response
             unset($originalTask->image); // Remove the image property from the response
-            
+
             return response()->json([
                 'message' => 'Task updated',
                 'task' => $originalTask
