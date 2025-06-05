@@ -1,0 +1,16 @@
+.voyager .side-menu .navbar-header{
+    background: #76b609 ;
+    border-color: #b8e868 ;
+}
+
+.btn.btn-primary {
+    background: #639a06;
+    border: 0;
+    border-radius: 3px;
+    color: #fff;
+    opacity: .9;
+}
+
+.widget .btn-primary:focus, .widget .btn-primary:hover, .widget .btn-primary:active, .widget .btn-primary.active, .widget .btn-primary:active:focus {
+    background: #75b509;
+}
