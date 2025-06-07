@@ -26,7 +26,7 @@ class UserController extends Controller
 
     public function getStudents()
     {
-        $students = User::where('role_id', '=', 2)->get();
+        $students = User::where('role_id', '=', 2)->where('is_outstanding', '=', 1)->get();
 
         // Add profile_picture_url to each student
         $students = $students->map(function ($student) {

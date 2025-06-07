@@ -20,7 +20,7 @@ use TCG\Voyager\Facades\Voyager;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect('/admin');
 });
 
 Route::get('/subscription_price/{id}',[SubscriptionController::class,'getPrice']);
