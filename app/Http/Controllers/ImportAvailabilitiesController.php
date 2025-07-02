@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Availability;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use TCG\Voyager\Facades\Voyager;
 
@@ -27,6 +28,8 @@ class ImportAvailabilitiesController extends Controller
         fgetcsv($handle);// Ignorar la primera fila (encabezados)
 
         while (($row = fgetcsv($handle, 1000, ",")) !== FALSE) {
+
+            Log::info('fila ' . print_r($row, true));
             Availability::create([
                 'user_id' => Auth::id(),
                 'date' => $row[0], // Ajusta según los campos del CSV

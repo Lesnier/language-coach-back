@@ -36,7 +36,7 @@ class AgendaController extends Controller
      * Store a newly created agenda in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
     {
@@ -62,6 +62,21 @@ class AgendaController extends Controller
             ], 422);
         }
 
+
+        $user = User::find(auth()->id());
+        $unpaidBills = $user->unpaidBills;
+        if (!$unpaidBills->isEmpty()) {
+            return response()->json([
+                'message' => 'No se puede agendar. Existen pagos pendientes de facturas.',
+                'errors' => [
+                    'bill' => ['No se puede agendar. Existen pagos pendientes de facturas.']
+                ],
+                'data' => $unpaidBills,
+                'scheduled' => 0
+            ], 422);
+        }
+
+
         // Create the agenda
         $agenda = new \App\Models\Agenda();
         $agenda->professor_id = $request->professor_id;
@@ -76,7 +91,8 @@ class AgendaController extends Controller
 
         return response()->json([
             'message' => 'Agenda created successfully',
-            'data' => $agenda
+            'data' => $agenda,
+            'scheduled' => 1
         ], 201);
     }
 

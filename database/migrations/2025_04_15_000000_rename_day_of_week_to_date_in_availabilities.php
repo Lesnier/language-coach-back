@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('availabilities', function (Blueprint $table) {
-            $table->renameColumn('day_of_week', 'date');
+            $table->renameColumn('date', 'date');
         });
     }
 
@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('availabilities', function (Blueprint $table) {
-            $table->renameColumn('date', 'day_of_week');
+            $table->renameColumn('date', 'date');
         });
     }
 };

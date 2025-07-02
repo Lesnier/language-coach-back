@@ -11,15 +11,16 @@ class Availability extends Model
 
     protected $fillable = [
         'user_id',
+        'date',
         'start_time', // This should contain both date and time
         'end_time',   // This should contain both date and time
-        // Any other fields
+        'is_available',
     ];
 
-    protected $casts = [
-        'start_time' => 'datetime',
-        'end_time' => 'datetime',
-    ];
+//    protected $casts = [
+//        'start_time' => 'time',
+//        'end_time' => 'time',
+//    ];
 
     public function user()
     {
